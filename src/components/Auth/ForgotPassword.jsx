@@ -1,19 +1,27 @@
 import React, { useState } from 'react';
 import { TextField, Button, Container, Typography, Box } from '@mui/material';
-import axios from 'axios';
+import { api } from '../../services/api';
+
+
 
 function ForgotPassword() {
-    const [email, setEmail] = useState('');
+    const [emailId, setEmailId] = useState('');
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.post('/api/forgot-password', { email });
+            await api.get('/auth/forgot-password', {
+                params: {
+                    emailId
+                }
+            });
             alert('Password reset link sent to your email');
         } catch (error) {
             console.error('Password reset failed', error);
+            alert('Failed to send password reset link. Please try again.');
         }
     };
+    
 
     return (
         <Container maxWidth="sm">
@@ -38,8 +46,8 @@ function ForgotPassword() {
                         label="Email"
                         variant="outlined"
                         type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        value={emailId}
+                        onChange={(e) => setEmailId(e.target.value)}
                         required
                         sx={{ mb: 3 }}
                     />
