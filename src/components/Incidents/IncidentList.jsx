@@ -29,7 +29,7 @@ function IncidentList() {
             <ul>
                 {incidents.map((incident) => (
                     <li key={incident.id}>
-                        <a href={`/incidents/${incident.id}`}>{incident.details}</a>
+                        <a href={`/incident/${incident.id}`}>{incident.details}</a>
                     </li>
                 ))}
             </ul>

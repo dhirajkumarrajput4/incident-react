@@ -8,6 +8,7 @@ import IncidentList from './components/Incidents/IncidentList';
 import IncidentForm from './components/Incidents/IncidentForm';
 import { AuthProvider } from './context/AuthContext'; // Import AuthContext
 import PrivateRoute from './components/PrivateRoute';
+import IncidentDetail from './components/Incidents/IncidentDetail';
 
 function App() {
     return (
@@ -20,6 +21,7 @@ function App() {
                     <Route path="/forgot-password" element={<ForgotPassword />} />
 
                     <Route path="/incidents" element={<PrivateRoute element={<IncidentList />} />} />
+                    <Route path="/incident/:id" element={<PrivateRoute element={<IncidentDetail />} />} />
                     <Route path="/create-incident" element={<PrivateRoute element={<IncidentForm />} />} />
 
                 </Routes>

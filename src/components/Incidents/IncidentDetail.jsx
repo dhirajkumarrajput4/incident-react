@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import api from '../../services/api';
+import { api } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 
 const IncidentDetail = () => {
@@ -9,19 +9,23 @@ const IncidentDetail = () => {
     const navigate = useNavigate();
     const [incident, setIncident] = useState(null);
     const [editMode, setEditMode] = useState(false);
-    const [updatedDetails, setUpdatedDetails] = useState('');
+    const [details, setDetails] = useState('');
+    const [priority, setPriority] = useState('');
+    const [status, setStatus] = useState('');
 
     // Fetch incident details on mount
     useEffect(() => {
         const fetchIncident = async () => {
             try {
-                const response = await api.get(`/home/incidents/${id}`, {
+                const response = await api.get(`/home/incident/${id}`, {
                     headers: {
                         Authorization: `Bearer ${auth.jwtToken}`
                     }
                 });
                 setIncident(response.data);
-                setUpdatedDetails(response.data.details);
+                setDetails(response.data.details);
+                setPriority(response.data.priority);
+                setStatus(response.data.status);
             } catch (error) {
                 console.error('Error fetching incident:', error);
                 if (error.response && error.response.status === 401) {
@@ -44,7 +48,7 @@ const IncidentDetail = () => {
     const handleDelete = async () => {
         if (window.confirm('Are you sure you want to delete this incident?')) {
             try {
-                await api.delete(`/home/incidents/${id}`, {
+                await api.delete(`/home/delete/${id}`, {
                     headers: {
                         Authorization: `Bearer ${auth.jwtToken}`
                     }
@@ -61,11 +65,14 @@ const IncidentDetail = () => {
     // Function to handle save after editing
     const handleSave = async () => {
         try {
-            const response = await api.put(`/home/incident/${id}`, {
-                details: updatedDetails
-            }, {
+            const response = await api.put(`/home/update/${id}`, null, {
                 headers: {
                     Authorization: `Bearer ${auth.jwtToken}`
+                },
+                params: {
+                    details: details,
+                    priority: priority,
+                    status: status
                 }
             });
             setIncident(response.data); // Update the incident details
@@ -87,10 +94,22 @@ const IncidentDetail = () => {
             {editMode ? (
                 <div>
                     <textarea
-                        value={updatedDetails}
-                        onChange={(e) => setUpdatedDetails(e.target.value)}
+                        value={details}
+                        onChange={(e) => setDetails(e.target.value)}
                         rows="4"
                         cols="50"
+                    />
+                    <input
+                        type="text"
+                        value={priority}
+                        onChange={(e) => setPriority(e.target.value)}
+                        placeholder="Priority"
+                    />
+                    <input
+                        type="text"
+                        value={status}
+                        onChange={(e) => setStatus(e.target.value)}
+                        placeholder="Status"
                     />
                     <button onClick={handleSave}>Save</button>
                     <button onClick={handleEditToggle}>Cancel</button>
@@ -98,6 +117,8 @@ const IncidentDetail = () => {
             ) : (
                 <div>
                     <p><strong>Details:</strong> {incident.details}</p>
+                    <p><strong>Priority:</strong> {incident.priority}</p>
+                    <p><strong>Status:</strong> {incident.status}</p>
                     <button onClick={handleEditToggle}>Edit</button>
                 </div>
             )}

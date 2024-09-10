@@ -1,25 +1,35 @@
 import React, { useState } from 'react';
 import { Button, TextField, Typography, Container, Paper } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { api, setAuthToken } from '../../services/api';
+import { api } from '../../services/api';
+import { useAuth } from '../../context/AuthContext';
 
 function IncidentForm() {
     const [details, setDetails] = useState('');
     const [priority, setPriority] = useState('Medium');
     const navigate = useNavigate();  // Use useNavigate here
+    const { auth } = useAuth();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await api.post('/home/create', { details, priority });
-            // Assuming response contains the incident information
+            const response = await api.post('/home/create', null, {
+                headers: {
+                    Authorization: `Bearer ${auth.jwtToken}`
+                },
+                params: {
+                    details, 
+                    priority
+                }
+            });
+            
             console.log('Incident created:', response.data);
-            navigate('/incidents');  // Use navigate for redirection
+            navigate('/incidents');  // Redirect to incidents list after creation
         } catch (error) {
             console.error('Failed to create incident', error);
         }
     };
-
+    
     return (
         <Container maxWidth="xs">
             <Paper elevation={3} style={{ padding: '20px' }}>
